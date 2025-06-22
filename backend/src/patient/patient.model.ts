@@ -25,4 +25,4 @@ export class Patient {
 
   @Field()
   updatedAt: Date;
-} 
+}

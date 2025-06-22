@@ -1,20 +1,22 @@
 import { Module } from '@nestjs/common';
+import { ConfigModule } from '@nestjs/config';
 import { GraphQLModule } from '@nestjs/graphql';
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { PatientModule } from './patient/patient.module';
-import { DatabaseModule } from './database/database.module';
+import { PrismaModule } from './prisma/prisma.module';
 
 @Module({
   imports: [
+    ConfigModule.forRoot({ isGlobal: true }),
     GraphQLModule.forRoot<ApolloDriverConfig>({
       driver: ApolloDriver,
-      autoSchemaFile: true, // This will generate the schema automatically
-      playground: true, // Enable GraphQL Playground
-      introspection: true, // Enable introspection
+      autoSchemaFile: true,
+      playground: process.env.APP_ENV === 'local',
+      introspection: process.env.APP_ENV === 'local',
     }),
-    DatabaseModule,
+    PrismaModule,
     PatientModule,
   ],
   controllers: [AppController],

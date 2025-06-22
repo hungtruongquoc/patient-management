@@ -1,9 +1,10 @@
 import { Module } from '@nestjs/common';
 import { PatientResolver } from './patient.resolver';
-import { DatabaseModule } from '../database/database.module';
+import { PatientService } from './patient.service';
+import { PrismaModule } from '../prisma/prisma.module';
 
 @Module({
-  imports: [DatabaseModule],
-  providers: [PatientResolver],
+  imports: [PrismaModule],
+  providers: [PatientResolver, PatientService],
 })
-export class PatientModule {} 
+export class PatientModule {}

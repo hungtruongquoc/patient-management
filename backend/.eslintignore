@@ -1,0 +1,36 @@
+# Dependencies
+node_modules/
+
+# Build outputs
+dist/
+build/
+
+# Generated files
+generated/
+*.generated.*
+
+# Database files
+*.db
+*.sqlite
+
+# Logs
+*.log
+
+# Environment files
+.env
+.env.*
+
+# Package files
+package-lock.json
+yarn.lock
+
+# IDE files
+.vscode/
+.idea/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Test coverage
+coverage/ 

@@ -16,4 +16,4 @@ export class CreatePatientInput {
 
   @Field()
   dateOfBirth: Date;
-} 
+}
