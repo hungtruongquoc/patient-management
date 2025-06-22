@@ -7,7 +7,6 @@ import { AppService } from './app.service';
 import { PatientModule } from './patient/patient.module';
 import { PrismaModule } from './prisma/prisma.module';
 import { APP_INTERCEPTOR } from '@nestjs/core';
-import { TraceService } from './common/services/trace.service';
 import { TraceInterceptor } from './common/interceptors/trace.interceptor';
 
 @Module({
@@ -25,7 +24,6 @@ import { TraceInterceptor } from './common/interceptors/trace.interceptor';
   controllers: [AppController],
   providers: [
     AppService,
-    TraceService,
     {
       provide: APP_INTERCEPTOR,
       useClass: TraceInterceptor,
