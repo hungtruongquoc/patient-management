@@ -1,74 +1,78 @@
-import { Injectable } from '@nestjs/common';
-import { PrismaService } from '../prisma/prisma.service';
-import { Prisma, Patient } from '../../generated/prisma';
-
-// Type for non-sensitive patient data (HIPAA compliant)
-type PatientBasicInfo = Pick<
-  Patient,
-  | 'id'
-  | 'firstName'
-  | 'lastName'
-  | 'email'
-  | 'phone'
-  | 'dateOfBirth'
-  | 'createdAt'
-  | 'updatedAt'
->;
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { Patient } from './patient.entity';
+import { CreatePatientInput } from './dto/create-patient.input';
+import { UpdatePatientInput } from './dto/update-patient.input';
 
 @Injectable()
 export class PatientService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    @InjectRepository(Patient)
+    private patientRepository: Repository<Patient>,
+  ) {}
 
-  async findAll(): Promise<PatientBasicInfo[]> {
-    // Only return non-sensitive fields by default for HIPAA compliance
-    return this.prisma.patient.findMany({
-      select: {
-        id: true,
-        firstName: true,
-        lastName: true,
-        email: true,
-        phone: true,
-        dateOfBirth: true,
-        createdAt: true,
-        updatedAt: true,
-      },
-    });
+  async create(createPatientInput: CreatePatientInput): Promise<Patient> {
+    const patient = this.patientRepository.create(createPatientInput);
+    return this.patientRepository.save(patient);
   }
 
-  async findOne(
-    id: number,
-    includeSensitive = false,
-  ): Promise<Patient | PatientBasicInfo | null> {
-    if (includeSensitive) {
-      return this.prisma.patient.findUnique({
-        where: { id },
-      });
+  async findAll(): Promise<Patient[]> {
+    return this.patientRepository.find();
+  }
+
+  async findOne(id: number): Promise<Patient> {
+    const patient = await this.patientRepository.findOne({ where: { id } });
+    if (!patient) {
+      throw new NotFoundException(`Patient with ID ${id} not found`);
     }
+    return patient;
+  }
 
-    return this.prisma.patient.findUnique({
+  async findOneWithSensitiveData(id: number): Promise<Patient> {
+    const patient = await this.patientRepository.findOne({
       where: { id },
-      select: {
-        id: true,
-        firstName: true,
-        lastName: true,
-        email: true,
-        phone: true,
-        dateOfBirth: true,
-        createdAt: true,
-        updatedAt: true,
-      },
+      select: [
+        'id',
+        'firstName',
+        'lastName',
+        'email',
+        'phone',
+        'dateOfBirth',
+        'ssn',
+        'medicalRecordNumber',
+        'address',
+        'emergencyContact',
+        'insuranceProvider',
+        'insuranceNumber',
+        'allergies',
+        'medications',
+        'medicalHistory',
+        'TIN',
+        'createdAt',
+        'updatedAt',
+        'createdBy',
+        'lastModifiedBy',
+        'organizationId',
+      ],
     });
+    if (!patient) {
+      throw new NotFoundException(`Patient with ID ${id} not found`);
+    }
+    return patient;
   }
 
-  async create(data: Prisma.PatientCreateInput): Promise<Patient> {
-    return this.prisma.patient.create({ data });
+  async update(
+    id: number,
+    updatePatientInput: UpdatePatientInput,
+  ): Promise<Patient> {
+    await this.patientRepository.update(id, updatePatientInput);
+    return this.findOne(id);
   }
 
-  async update(id: number, data: Prisma.PatientUpdateInput): Promise<Patient> {
-    return this.prisma.patient.update({ where: { id }, data });
-  }
-
-  async delete(id: number): Promise<Patient> {
-    return this.prisma.patient.delete({ where: { id } });
+  async remove(id: number): Promise<Patient> {
+    const patient = await this.findOne(id);
+    await this.patientRepository.delete(id);
+    return patient;
   }
 }

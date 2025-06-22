@@ -5,7 +5,7 @@ import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { PatientModule } from './patient/patient.module';
-import { PrismaModule } from './prisma/prisma.module';
+import { DatabaseModule } from './database/database.module';
 import { APP_INTERCEPTOR } from '@nestjs/core';
 import { TraceInterceptor } from './common/interceptors/trace.interceptor';
 
@@ -18,7 +18,7 @@ import { TraceInterceptor } from './common/interceptors/trace.interceptor';
       playground: process.env.APP_ENV === 'local',
       introspection: process.env.APP_ENV === 'local',
     }),
-    PrismaModule,
+    DatabaseModule,
     PatientModule,
   ],
   controllers: [AppController],
