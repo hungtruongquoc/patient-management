@@ -1,0 +1,58 @@
+version: '3.8'
+
+services:
+  patient-management-api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - APP_ENV=production
+      - PORT=3000
+      # Database configuration
+      - DATABASE_URL=file:./patients.db
+    volumes:
+      # Persist SQLite database
+      - patient-db:/app/prisma
+    healthcheck:
+      test: ["CMD", "node", "-e", "require('http').get('http://localhost:3000/health', (res) => { process.exit(res.statusCode === 200 ? 0 : 1) })"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    restart: unless-stopped
+    networks:
+      - patient-network
+
+  # Development service (optional)
+  patient-management-dev:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: builder
+    ports:
+      - "3001:3000"
+    environment:
+      - NODE_ENV=development
+      - APP_ENV=local
+      - PORT=3000
+      - DATABASE_URL=file:./patients.db
+    volumes:
+      - .:/app
+      - /app/node_modules
+      - patient-db:/app/prisma
+    command: npm run start:dev
+    profiles:
+      - dev
+    networks:
+      - patient-network
+
+volumes:
+  patient-db:
+    driver: local
+
+networks:
+  patient-network:
+    driver: bridge 

@@ -754,6 +754,220 @@ npm run start:dev
 npm run start:prod
 ```
 
+## Docker
+
+This application is containerized with Docker for easy deployment and development.
+
+### 🐳 **Docker Features**
+
+- **Multi-stage build** for optimized production images
+- **Node.js 22 Alpine** for smaller, secure images
+- **Non-root user** for security
+- **Health checks** for container orchestration
+- **Volume persistence** for SQLite database
+- **Development and production** configurations
+
+### 🚀 **Quick Start with Docker**
+
+#### **Production Build**
+```bash
+# Build the Docker image
+npm run docker:build
+
+# Run the container
+npm run docker:run
+
+# Or use docker-compose (recommended)
+npm run docker:compose:up
+```
+
+#### **Development with Docker**
+```bash
+# Run development environment
+npm run docker:compose:dev
+
+# View logs
+npm run docker:logs
+```
+
+### 📋 **Docker Commands**
+
+#### **Build & Run**
+```bash
+# Build production image
+docker build -t patient-management-api .
+
+# Run container
+docker run -p 3000:3000 patient-management-api
+
+# Run with environment variables
+docker run -p 3000:3000 \
+  -e NODE_ENV=production \
+  -e APP_ENV=production \
+  patient-management-api
+```
+
+#### **Docker Compose**
+```bash
+# Start production services
+docker-compose up -d
+
+# Start development environment
+docker-compose --profile dev up -d
+
+# View logs
+docker-compose logs -f
+
+# Stop services
+docker-compose down
+
+# Rebuild and start
+docker-compose up -d --build
+```
+
+#### **Database Management**
+```bash
+# Run migrations in container
+docker-compose exec patient-management-api npm run prisma:migrate:deploy
+
+# Access Prisma Studio
+docker-compose exec patient-management-api npm run prisma:studio
+
+# Reset database (development only)
+docker-compose exec patient-management-api npm run prisma:reset
+```
+
+### 🔧 **Docker Configuration**
+
+#### **Dockerfile Stages**
+1. **Base**: Node.js 22 Alpine base image
+2. **Deps**: Install production dependencies
+3. **Builder**: Build TypeScript and generate Prisma client
+4. **Runner**: Production image with non-root user
+
+#### **Environment Variables**
+```bash
+NODE_ENV=production          # Node environment
+APP_ENV=production           # Application environment
+PORT=3000                    # Application port
+DATABASE_URL=file:./patients.db  # SQLite database path
+```
+
+#### **Volumes**
+- `patient-db`: Persists SQLite database across container restarts
+
+#### **Networks**
+- `patient-network`: Isolated network for the application
+
+### 🏥 **Health Checks**
+
+The container includes health checks that verify:
+- Application is responding on port 3000
+- Health endpoint returns 200 status
+- Service is ready to handle requests
+
+```bash
+# Check container health
+docker inspect patient-management-api | grep Health -A 10
+
+# Manual health check
+curl http://localhost:3000/health
+```
+
+### 🔒 **Security Features**
+
+- **Non-root user**: Application runs as `nestjs` user (UID 1001)
+- **Alpine Linux**: Minimal attack surface
+- **Multi-stage build**: No build tools in production image
+- **Read-only filesystem**: Where possible
+- **No secrets in image**: Use environment variables
+
+### 📦 **Image Optimization**
+
+- **Multi-stage build** reduces final image size
+- **Alpine Linux** base (~5MB vs ~300MB for Ubuntu)
+- **Production-only dependencies** in final image
+- **Layer caching** for faster rebuilds
+
+### 🚀 **Deployment Examples**
+
+#### **Local Development**
+```bash
+# Start development environment
+npm run docker:compose:dev
+
+# Access GraphQL Playground
+open http://localhost:3001/graphql
+
+# View logs
+npm run docker:logs
+```
+
+#### **Production Deployment**
+```bash
+# Build and start production
+npm run docker:compose:up
+
+# Access API
+curl http://localhost:3000/health
+
+# Run migrations
+docker-compose exec patient-management-api npm run prisma:migrate:deploy
+```
+
+#### **Kubernetes Deployment**
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: patient-management-api
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: patient-management-api
+  template:
+    metadata:
+      labels:
+        app: patient-management-api
+    spec:
+      containers:
+      - name: patient-management-api
+        image: patient-management-api:latest
+        ports:
+        - containerPort: 3000
+        env:
+        - name: NODE_ENV
+          value: "production"
+        - name: APP_ENV
+          value: "production"
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 3000
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 3000
+          initialDelaySeconds: 5
+          periodSeconds: 5
+```
+
+### 🧹 **Cleanup**
+
+```bash
+# Stop and remove containers
+npm run docker:stop
+
+# Remove all containers and images
+docker-compose down --rmi all --volumes
+
+# Clean up Docker system
+npm run docker:clean
+```
+
 ## GraphQL API
 
 The GraphQL playground is available at: http://localhost:3000/graphql

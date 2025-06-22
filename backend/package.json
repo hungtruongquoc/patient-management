@@ -26,7 +26,15 @@
     "prisma:migrate:status": "prisma migrate status",
     "prisma:generate": "prisma generate",
     "prisma:studio": "prisma studio",
-    "prisma:reset": "prisma migrate reset"
+    "prisma:reset": "prisma migrate reset",
+    "docker:build": "docker build -t patient-management-api .",
+    "docker:run": "docker run -p 3000:3000 --name patient-management-api patient-management-api",
+    "docker:stop": "docker stop patient-management-api && docker rm patient-management-api",
+    "docker:compose:up": "docker-compose up -d",
+    "docker:compose:down": "docker-compose down",
+    "docker:compose:dev": "docker-compose --profile dev up -d",
+    "docker:logs": "docker-compose logs -f",
+    "docker:clean": "docker system prune -f"
   },
   "dependencies": {
     "@apollo/server": "^4.12.2",
