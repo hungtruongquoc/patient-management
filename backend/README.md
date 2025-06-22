@@ -89,6 +89,191 @@ graph TD
   A --> E
 ```
 
+## GraphQL Request Flow with Trace ID & Logging
+
+This section explains how a GraphQL request flows through the application, including trace ID propagation and structured logging.
+
+### Complete Request Flow
+
+When a client sends a GraphQL request to `/graphql`, it goes through the following layers:
+
+#### 1. **Request Entry Point**
+```bash
+POST /graphql
+Headers: X-Trace-ID: abc-123-def
+Body: { "query": "query { patients { id firstName } }" }
+```
+
+#### 2. **Global Interceptor Processing**
+The `TraceInterceptor` (registered globally) processes every request:
+- Extracts trace ID from headers (`X-Trace-ID`, `X-Request-ID`, etc.)
+- Generates new trace ID if none provided
+- Sets trace ID in response headers
+- Establishes async context for the entire request
+
+#### 3. **GraphQL Schema Resolution**
+- GraphQL module parses and validates the query
+- Routes to appropriate resolver based on query type
+- Handles authentication/authorization (if configured)
+
+#### 4. **Resolver Execution**
+- Business logic execution with automatic logging
+- Service layer calls with trace ID context
+- Structured logging with operation metadata
+
+#### 5. **Service Layer**
+- Data access logic
+- Prisma client calls
+- Database query execution
+
+#### 6. **Database Layer**
+- Prisma ORM handles SQL generation
+- SQLite database execution
+- Typed result mapping
+
+### Detailed Flow Diagram
+
+```mermaid
+sequenceDiagram
+    participant Client
+    participant TraceInterceptor
+    participant GraphQLModule
+    participant PatientResolver
+    participant PatientService
+    participant PrismaService
+    participant SQLite
+    participant AppLogger
+
+    Client->>TraceInterceptor: POST /graphql<br/>X-Trace-ID: abc-123
+    Note over TraceInterceptor: Extract trace ID<br/>Set async context
+    TraceInterceptor->>GraphQLModule: Forward request
+    
+    GraphQLModule->>PatientResolver: Route to patients query
+    Note over PatientResolver: Log: "Fetching all patients"
+    PatientResolver->>PatientService: findAll()
+    
+    PatientService->>PrismaService: findMany()
+    PrismaService->>SQLite: SELECT * FROM patients
+    SQLite-->>PrismaService: Patient data
+    PrismaService-->>PatientService: Typed results
+    
+    PatientService-->>PatientResolver: Patient array
+    Note over PatientResolver: Log: "Successfully fetched patients"
+    PatientResolver-->>GraphQLModule: GraphQL response
+    
+    GraphQLModule-->>TraceInterceptor: Response with data
+    TraceInterceptor-->>Client: Response + X-Trace-ID header
+```
+
+### Trace ID Propagation
+
+The trace ID flows through the entire request lifecycle:
+
+```mermaid
+graph LR
+    A[Request Headers] --> B[TraceInterceptor]
+    B --> C[AsyncLocalStorage Context]
+    C --> D[AppLogger]
+    C --> E[Response Headers]
+    
+    subgraph "Automatic Inclusion"
+        D --> F[All Log Entries]
+        E --> G[Client Tracking]
+    end
+```
+
+### Logging Flow Example
+
+**Request:**
+```bash
+curl -X POST http://localhost:3000/graphql \
+  -H "Content-Type: application/json" \
+  -H "X-Trace-ID: demo-123" \
+  -d '{"query":"query { patients { id firstName } }"}'
+```
+
+**Response:**
+```json
+{
+  "data": {
+    "patients": [
+      {
+        "id": 1,
+        "firstName": "John"
+      }
+    ]
+  }
+}
+```
+
+**Response Headers:**
+```
+X-Trace-ID: demo-123
+```
+
+**Log Output:**
+```
+[INFO] Fetching all patients {"operation":"patients.query","traceId":"demo-123"}
+[INFO] Successfully fetched patients {"operation":"patients.query","count":1,"traceId":"demo-123"}
+```
+
+### Key Components in Action
+
+#### **TraceInterceptor**
+```typescript
+intercept(context: ExecutionContext, next: CallHandler) {
+  // 1. Extract trace ID from headers
+  const traceId = request.headers['x-trace-id'] || randomUUID();
+  
+  // 2. Set in response headers
+  response.setHeader('X-Trace-ID', traceId);
+  
+  // 3. Establish async context
+  return logContext.run({ traceId }, () => next.handle());
+}
+```
+
+#### **AppLogger (Static Facade)**
+```typescript
+// Automatic trace ID inclusion
+AppLogger.info('Fetching patients', { operation: 'patients.query' });
+// Output: {"level":"info","message":"Fetching patients","operation":"patients.query","traceId":"demo-123"}
+```
+
+#### **PatientResolver**
+```typescript
+@Query(() => [Patient])
+async patients(): Promise<PatientBasicInfo[]> {
+  AppLogger.info('Fetching all patients', { operation: 'patients.query' });
+  const result = await this.patientService.findAll();
+  AppLogger.info('Successfully fetched patients', { 
+    operation: 'patients.query', 
+    count: result.length 
+  });
+  return result;
+}
+```
+
+### Benefits of This Architecture
+
+1. **Request Tracing**: Every request has a unique trace ID
+2. **Structured Logging**: All logs include context and trace ID
+3. **Type Safety**: Prisma provides end-to-end type safety
+4. **Performance**: AsyncLocalStorage is fast and efficient
+5. **Observability**: Easy to track requests across the entire stack
+6. **Debugging**: Trace ID helps correlate logs across services
+
+### Monitoring & Debugging
+
+With this setup, you can:
+- **Track requests** across the entire application stack
+- **Correlate logs** from different services using trace ID
+- **Debug issues** by following the trace ID through logs
+- **Monitor performance** by timing operations within the same request
+- **Audit requests** for security and compliance purposes
+
+This architecture makes debugging and monitoring much easier in production environments!
+
 ## Prisma Schema Example
 
 ```prisma
