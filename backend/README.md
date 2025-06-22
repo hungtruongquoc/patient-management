@@ -1128,3 +1128,33 @@ Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
    ```
 
 > **Tip:** Always use migrations (not `db push`) in production for safe, trackable schema changes.
+
+## Logging and Trace ID
+
+This project uses a static logger facade (`AppLogger`) with automatic trace ID injection for every request. You do **not** need to inject a logger or trace service—just import and use it anywhere!
+
+### How It Works
+- Every HTTP request gets a unique trace ID (or uses the incoming one).
+- All logs for that request automatically include the trace ID.
+- The trace ID is returned in the response header (`X-Trace-ID`).
+- You can use `AppLogger` anywhere (controller, service, utility, etc.).
+
+### Usage Example
+
+```typescript
+import { AppLogger } from './common/logging/app-logger';
+
+// Log an info message (traceId is included automatically)
+AppLogger.info('Patient created', { patientId: 123 });
+
+// Log an error
+AppLogger.error('Failed to create patient', { error });
+
+// Log with custom context
+AppLogger.info('User login', { userId: user.id, ip: req.ip });
+
+// You can use AppLogger in any file, function, or static context!
+```
+
+### How to Add More Context
+If you want to add more information (like user ID, organization, etc.) to every log for a request, update the context in the `TraceInterceptor` or create a custom context store in `log-context.ts`.
