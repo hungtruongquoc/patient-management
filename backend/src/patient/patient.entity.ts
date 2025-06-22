@@ -30,11 +30,12 @@ export class Patient {
   @Field()
   phone: string;
 
-  @Column('datetime')
-  @Field()
+  @Column('datetime', { select: false, nullable: true })
+  @Field({ nullable: true })
   dateOfBirth: Date;
 
   @Column({ nullable: true, select: false }) // Hidden by default
+  @Field({ nullable: true })
   ssn?: string;
 
   @Column({ nullable: true, select: false }) // Hidden by default

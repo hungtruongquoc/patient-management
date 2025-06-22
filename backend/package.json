@@ -26,6 +26,7 @@
     "migration:run": "npm run typeorm -- migration:run -d ormconfig.ts",
     "migration:revert": "npm run typeorm -- migration:revert -d ormconfig.ts",
     "migration:show": "npm run typeorm -- migration:show -d ormconfig.ts",
+    "seed": "ts-node src/database/seed.ts",
     "schema:sync": "npm run typeorm -- schema:sync -d ormconfig.ts",
     "schema:drop": "npm run typeorm -- schema:drop -d ormconfig.ts",
     "docker:build": "docker build -t patient-management-api .",
@@ -59,6 +60,7 @@
   "devDependencies": {
     "@eslint/eslintrc": "^3.2.0",
     "@eslint/js": "^9.18.0",
+    "@faker-js/faker": "^9.8.0",
     "@nestjs/cli": "^11.0.0",
     "@nestjs/schematics": "^11.0.0",
     "@nestjs/testing": "^11.0.1",

@@ -49,12 +49,12 @@ export class PatientResolver {
     }
   }
 
-  @Query(() => Patient, { nullable: true })
-  async patientWithSensitiveData(
+  @Query(() => Patient, { nullable: true, name: 'findOneWithSensitiveData' })
+  async findOneWithSensitiveData(
     @Args('id', { type: () => Int }) id: number,
   ): Promise<Patient | null> {
     AppLogger.info('Fetching patient with sensitive data', {
-      operation: 'patientWithSensitiveData.query',
+      operation: 'findOneWithSensitiveData.query',
       patientId: id,
     });
 
@@ -62,7 +62,7 @@ export class PatientResolver {
       const result = await this.patientService.findOneWithSensitiveData(id);
 
       AppLogger.info('Successfully fetched patient with sensitive data', {
-        operation: 'patientWithSensitiveData.query',
+        operation: 'findOneWithSensitiveData.query',
         patientId: id,
         patientName: `${result.firstName} ${result.lastName}`,
       });
@@ -70,7 +70,7 @@ export class PatientResolver {
       return result;
     } catch (error) {
       AppLogger.warn('Patient not found for sensitive data access', {
-        operation: 'patientWithSensitiveData.query',
+        operation: 'findOneWithSensitiveData.query',
         patientId: id,
         error: error instanceof Error ? error.message : 'Unknown error',
       });

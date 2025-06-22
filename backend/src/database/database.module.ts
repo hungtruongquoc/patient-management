@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { Patient } from '../patient/patient.entity';
+import { SeederService } from './seeder.service';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { Patient } from '../patient/patient.entity';
     }),
     TypeOrmModule.forFeature([Patient]),
   ],
-  exports: [TypeOrmModule],
+  providers: [SeederService],
+  exports: [TypeOrmModule, SeederService],
 })
-export class DatabaseModule {} 
+export class DatabaseModule {}

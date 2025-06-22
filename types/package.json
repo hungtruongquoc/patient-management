@@ -1,0 +1,22 @@
+{
+  "name": "@patient-management/types",
+  "version": "1.0.0",
+  "description": "Shared TypeScript types for Patient Management System",
+  "main": "index.ts",
+  "types": "index.ts",
+  "scripts": {
+    "build": "tsc",
+    "check": "tsc --noEmit"
+  },
+  "keywords": [
+    "typescript",
+    "types",
+    "patient-management",
+    "graphql"
+  ],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "typescript": "^5.0.0"
+  }
+} 
