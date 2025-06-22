@@ -1,21 +1,18 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Patient as PatientEntity } from './patient.entity';
-import {
-  Patient,
-  CreatePatientInput as SharedCreatePatientInput,
-  UpdatePatientInput as SharedUpdatePatientInput,
-} from '../../../types';
+import { Patient } from './patient.entity';
+import { CreatePatientInput } from './dto/create-patient.input';
+import { UpdatePatientInput } from './dto/update-patient.input';
 
 @Injectable()
 export class PatientService {
   constructor(
-    @InjectRepository(PatientEntity)
-    private patientRepository: Repository<PatientEntity>,
+    @InjectRepository(Patient)
+    private patientRepository: Repository<Patient>,
   ) {}
 
-  async create(createPatientInput: SharedCreatePatientInput): Promise<Patient> {
+  async create(createPatientInput: CreatePatientInput): Promise<Patient> {
     const patient = this.patientRepository.create(createPatientInput);
     return this.patientRepository.save(patient);
   }
@@ -39,7 +36,7 @@ export class PatientService {
       .addSelect('patient.ssn')
       .where('patient.id = :id', { id })
       .getOne();
-
+    
     if (!patient) {
       throw new NotFoundException(`Patient with ID ${id} not found`);
     }
@@ -68,7 +65,7 @@ export class PatientService {
 
   async update(
     id: number,
-    updatePatientInput: SharedUpdatePatientInput,
+    updatePatientInput: UpdatePatientInput,
   ): Promise<Patient> {
     await this.patientRepository.update(id, updatePatientInput);
     return this.findOne(id);
