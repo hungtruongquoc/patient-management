@@ -12,7 +12,7 @@ services:
       - APP_ENV=production
       - PORT=3000
       # Database configuration
-      - DATABASE_URL=file:./patients.db
+      - DATABASE_URL=file:./data/patients.db
     volumes:
       # Persist SQLite database
       - patient-db:/app/prisma
@@ -38,7 +38,7 @@ services:
       - NODE_ENV=development
       - APP_ENV=local
       - PORT=3000
-      - DATABASE_URL=file:./patients.db
+      - DATABASE_URL=file:./data/patients.db
     volumes:
       - .:/app
       - /app/node_modules
@@ -55,4 +55,4 @@ volumes:
 
 networks:
   patient-network:
-    driver: bridge 
+    driver: bridge

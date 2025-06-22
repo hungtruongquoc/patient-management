@@ -86,4 +86,8 @@ export class Patient {
 
   @Column({ nullable: true })
   organizationId?: string;
-} 
+
+  @Column({ nullable: true })
+  @Field({ nullable: true })
+  deletedAt?: Date;
+}
