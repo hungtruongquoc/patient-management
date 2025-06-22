@@ -3,20 +3,34 @@ import { Patient } from './patient.model';
 import { CreatePatientInput } from './dto/create-patient.input';
 import { UpdatePatientInput } from './dto/update-patient.input';
 import { PatientService } from './patient.service';
+import { Patient as PrismaPatient } from '../../generated/prisma';
+
+// Type for non-sensitive patient data (HIPAA compliant)
+type PatientBasicInfo = Pick<
+  PrismaPatient,
+  | 'id'
+  | 'firstName'
+  | 'lastName'
+  | 'email'
+  | 'phone'
+  | 'dateOfBirth'
+  | 'createdAt'
+  | 'updatedAt'
+>;
 
 @Resolver(() => Patient)
 export class PatientResolver {
   constructor(private readonly patientService: PatientService) {}
 
   @Query(() => [Patient])
-  async patients(): Promise<unknown[]> {
+  async patients(): Promise<PatientBasicInfo[]> {
     return this.patientService.findAll();
   }
 
   @Query(() => Patient, { nullable: true })
   async patient(
     @Args('id', { type: () => Int }) id: number,
-  ): Promise<unknown | null> {
+  ): Promise<PatientBasicInfo | null> {
     // Only include sensitive fields if user is authorized (add your guard/logic here)
     return this.patientService.findOne(id, false);
   }
@@ -24,7 +38,7 @@ export class PatientResolver {
   @Mutation(() => Patient)
   async createPatient(
     @Args('createPatientInput') createPatientInput: CreatePatientInput,
-  ): Promise<unknown> {
+  ): Promise<PrismaPatient> {
     return this.patientService.create(createPatientInput);
   }
 
@@ -32,7 +46,7 @@ export class PatientResolver {
   async updatePatient(
     @Args('id', { type: () => Int }) id: number,
     @Args('updatePatientInput') updatePatientInput: UpdatePatientInput,
-  ): Promise<unknown | null> {
+  ): Promise<PrismaPatient | null> {
     const updatedPatient = await this.patientService.update(
       id,
       updatePatientInput,
