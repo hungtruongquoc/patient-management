@@ -105,7 +105,6 @@ GitHub Actions workflows provide:
 - **Pull request** validation
 
 ### Workflows
-- `ci.yml` - Combined testing for all apps
 - `backend-ci.yml` - Backend-specific testing
 - `frontend-ci.yml` - Frontend-specific testing
 - `docker.yml` - Docker image building and publishing
