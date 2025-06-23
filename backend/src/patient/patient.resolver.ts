@@ -35,7 +35,6 @@ export class PatientResolver {
       AppLogger.info('Successfully fetched patient', {
         operation: 'patient.query',
         patientId: id,
-        patientName: `${result.firstName} ${result.lastName}`,
       });
 
       return result;
@@ -64,7 +63,6 @@ export class PatientResolver {
       AppLogger.info('Successfully fetched patient with sensitive data', {
         operation: 'findOneWithSensitiveData.query',
         patientId: id,
-        patientName: `${result.firstName} ${result.lastName}`,
       });
 
       return result;
@@ -84,7 +82,6 @@ export class PatientResolver {
   ): Promise<Patient> {
     AppLogger.info('Creating new patient', {
       operation: 'createPatient.mutation',
-      patientEmail: createPatientInput.email,
     });
 
     const result = await this.patientService.create(createPatientInput);
@@ -92,7 +89,6 @@ export class PatientResolver {
     AppLogger.info('Successfully created patient', {
       operation: 'createPatient.mutation',
       patientId: result.id,
-      patientName: `${result.firstName} ${result.lastName}`,
     });
 
     return result;
@@ -118,7 +114,6 @@ export class PatientResolver {
       AppLogger.info('Successfully updated patient', {
         operation: 'updatePatient.mutation',
         patientId: id,
-        patientName: `${updatedPatient.firstName} ${updatedPatient.lastName}`,
       });
 
       return updatedPatient;
