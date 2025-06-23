@@ -1,18 +1,24 @@
 import { ApolloProvider } from '@apollo/client';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { client } from './lib/apollo-client';
+import Layout from './components/Layout';
 import PatientList from './components/PatientList';
 
 function App() {
   return (
     <ApolloProvider client={client}>
-      <div className="min-h-screen bg-gray-50">
-        <div className="container mx-auto px-4 py-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-8">
-            Patient Management System
-          </h1>
-          <PatientList />
-        </div>
-      </div>
+      <Router>
+        <Layout>
+          <Routes>
+            <Route path="/" element={<PatientList />} />
+            <Route path="/patients" element={<PatientList />} />
+            {/* Add more routes here as we build them */}
+            {/* <Route path="/patients/:id" element={<PatientDetails />} /> */}
+            {/* <Route path="/patients/new" element={<PatientForm />} /> */}
+            {/* <Route path="/patients/:id/edit" element={<PatientForm />} /> */}
+          </Routes>
+        </Layout>
+      </Router>
     </ApolloProvider>
   );
 }
