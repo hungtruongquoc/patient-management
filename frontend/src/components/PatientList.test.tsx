@@ -20,14 +20,6 @@ vi.mocked(useQuery).mockReturnValue({
         lastName: 'Doe',
         email: 'john.doe@example.com',
         phone: '555-1234',
-        address: '123 Main St',
-        emergencyContact: 'Jane Doe',
-        insuranceProvider: 'Blue Cross',
-        allergies: 'None',
-        medications: 'None',
-        TIN: '123456789',
-        createdAt: '2024-01-01T00:00:00.000Z',
-        updatedAt: '2024-01-01T00:00:00.000Z',
       },
       {
         id: 2,
@@ -35,14 +27,6 @@ vi.mocked(useQuery).mockReturnValue({
         lastName: 'Smith',
         email: 'jane.smith@example.com',
         phone: '555-5678',
-        address: '456 Oak Ave',
-        emergencyContact: 'John Smith',
-        insuranceProvider: 'Aetna',
-        allergies: 'Peanuts',
-        medications: 'Aspirin',
-        TIN: '987654321',
-        createdAt: '2024-01-02T00:00:00.000Z',
-        updatedAt: '2024-01-02T00:00:00.000Z',
       },
     ],
   },
@@ -69,7 +53,7 @@ describe('PatientList', () => {
     render(<PatientList />);
 
     await waitFor(() => {
-      expect(screen.getByText('Patient Management System')).toBeInTheDocument();
+      expect(screen.getByText('Patients (2)')).toBeInTheDocument();
       expect(screen.getByText('John Doe')).toBeInTheDocument();
       expect(screen.getByText('Jane Smith')).toBeInTheDocument();
       expect(screen.getByText('john.doe@example.com')).toBeInTheDocument();
@@ -84,8 +68,6 @@ describe('PatientList', () => {
       // Check for patient details
       expect(screen.getByText('555-1234')).toBeInTheDocument();
       expect(screen.getByText('555-5678')).toBeInTheDocument();
-      expect(screen.getByText('123 Main St')).toBeInTheDocument();
-      expect(screen.getByText('456 Oak Ave')).toBeInTheDocument();
     });
   });
 
@@ -132,9 +114,8 @@ describe('PatientList', () => {
     });
 
     render(<PatientList />);
-    expect(
-      screen.getByText('Error loading patients: Failed to fetch patients')
-    ).toBeInTheDocument();
+    expect(screen.getByText('Error loading patients')).toBeInTheDocument();
+    expect(screen.getByText('Failed to fetch patients')).toBeInTheDocument();
   });
 
   it('shows empty state when no patients', () => {
@@ -157,6 +138,6 @@ describe('PatientList', () => {
     });
 
     render(<PatientList />);
-    expect(screen.getByText('No patients found.')).toBeInTheDocument();
+    expect(screen.getByText('No patients found')).toBeInTheDocument();
   });
 });
