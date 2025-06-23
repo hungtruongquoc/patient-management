@@ -354,6 +354,208 @@ curl http://localhost:3000/health
 - **Docker** containerization
 - **Comprehensive testing** suite
 
+# NestJS Module Architecture
+
+This document explains how our NestJS modules are structured and how they work together, particularly focusing on GraphQL integration and dependency injection patterns.
+
+## Module Structure Overview
+
+Our application follows a domain-driven module structure where each feature (like `Patient`) has its own dedicated module containing all related components.
+
+### Typical Module Pattern
+
+```typescript
+@Module({
+  imports: [TypeOrmModule.forFeature([EntityName])],
+  providers: [EntityService, EntityResolver],
+  exports: [EntityService],
+})
+export class EntityModule {}
+```
+
+## Key Components
+
+### Imports
+- **TypeOrmModule.forFeature([Entity])**: Registers entities with TypeORM for this module
+- Provides access to repository pattern for database operations
+- `forFeature()` is used at module level, `forRoot()` is used globally
+
+### Providers
+- **Service Classes**: Contains business logic and database operations
+- **Resolver Classes**: Handles GraphQL queries and mutations
+- Both are registered as providers for dependency injection
+
+### Exports
+- **Services Only**: Business logic services are exported for use in other modules
+- **Resolvers Not Exported**: GraphQL resolvers are discovered automatically
+
+## GraphQL Integration
+
+### Automatic Schema Discovery
+
+```typescript
+GraphQLModule.forRoot<ApolloDriverConfig>({
+  driver: ApolloDriver,
+  autoSchemaFile: true, // Enables automatic schema generation
+  playground: process.env.APP_ENV === 'local',
+  introspection: process.env.APP_ENV === 'local',
+})
+```
+
+With `autoSchemaFile: true`, NestJS automatically:
+- Scans all imported modules for `@Resolver()` decorated classes
+- Generates GraphQL schema from TypeScript types and decorators
+- Includes resolvers in the schema regardless of export status
+
+### Why Resolvers Don't Need Export
+
+```typescript
+// In PatientModule
+providers: [PatientService, PatientResolver]
+exports: [PatientService] // Only service is exported
+```
+
+- **GraphQL Discovery**: Happens during application bootstrap
+- **Module Scanning**: NestJS scans all providers in imported modules
+- **Decorator Detection**: Classes with `@Resolver()` are automatically included
+- **Schema Generation**: Resolvers become part of the GraphQL schema
+
+## Dependency Injection Flow
+
+### Cross-Module Service Usage
+
+```typescript
+// AppointmentModule can use PatientService
+@Module({
+  imports: [PatientModule], // Import the module
+  providers: [AppointmentService],
+})
+export class AppointmentModule {}
+
+// In AppointmentService
+@Injectable()
+export class AppointmentService {
+  constructor(
+    private patientService: PatientService // Inject exported service
+  ) {}
+}
+```
+
+### Internal Module Dependencies
+
+```typescript
+// Within PatientModule
+@Resolver(() => Patient)
+export class PatientResolver {
+  constructor(
+    private patientService: PatientService // Internal injection
+  ) {}
+}
+```
+
+## Best Practices
+
+### 1. Export Strategy
+- ✅ **Export Services**: For business logic reuse across modules
+- ❌ **Don't Export Resolvers**: GraphQL handles discovery automatically
+- ✅ **Export Utilities**: Shared helpers and validators
+
+### 2. Module Organization
+```
+src/
+├── patient/
+│   ├── patient.entity.ts
+│   ├── patient.service.ts
+│   ├── patient.resolver.ts
+│   └── patient.module.ts
+├── appointment/
+│   ├── appointment.entity.ts
+│   ├── appointment.service.ts
+│   ├── appointment.resolver.ts
+│   └── appointment.module.ts
+└── app.module.ts
+```
+
+### 3. Import Patterns
+```typescript
+@Module({
+  imports: [
+    // Global configuration
+    ConfigModule.forRoot({ isGlobal: true }),
+    
+    // Database setup
+    DatabaseModule,
+    
+    // Feature modules
+    PatientModule,
+    AppointmentModule,
+    
+    // GraphQL setup (should be after feature modules)
+    GraphQLModule.forRoot(/* config */),
+  ],
+})
+```
+
+## Common Patterns
+
+### Repository Pattern with TypeORM
+```typescript
+@Injectable()
+export class PatientService {
+  constructor(
+    @InjectRepository(Patient)
+    private patientRepository: Repository<Patient>,
+  ) {}
+}
+```
+
+### GraphQL Resolver Structure
+```typescript
+@Resolver(() => Patient)
+export class PatientResolver {
+  constructor(private patientService: PatientService) {}
+
+  @Query(() => [Patient])
+  async patients(): Promise<Patient[]> {
+    return this.patientService.findAll();
+  }
+
+  @Mutation(() => Patient)
+  async createPatient(@Args('input') input: CreatePatientInput): Promise<Patient> {
+    return this.patientService.create(input);
+  }
+}
+```
+
+## Environment Configuration
+
+### Development vs Production
+```typescript
+GraphQLModule.forRoot<ApolloDriverConfig>({
+  driver: ApolloDriver,
+  autoSchemaFile: true,
+  playground: process.env.APP_ENV === 'local',    // Only in local
+  introspection: process.env.APP_ENV === 'local', // Only in local
+})
+```
+
+- **Playground**: GraphQL IDE for development
+- **Introspection**: Allows schema querying (security consideration for production)
+
+## Troubleshooting
+
+### Common Issues
+
+1. **Resolver Not Found**: Ensure module is imported in `AppModule`
+2. **Circular Dependencies**: Use `forwardRef()` when modules depend on each other
+3. **Repository Not Found**: Check `TypeOrmModule.forFeature([Entity])` is imported
+4. **Service Not Available**: Verify service is exported from its module
+
+### Debug Tips
+- Use `@nestjs/cli` to generate modules: `nest g module patient`
+- Check module import order in `AppModule`
+- Verify entity imports in `TypeOrmModule.forFeature([])`
+
 ### Frontend (Coming Soon)
 - Modern React/Next.js application
 - TypeScript support
