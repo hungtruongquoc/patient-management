@@ -32,7 +32,7 @@ export class Patient {
 
   @Column('datetime', { select: false, nullable: true })
   @Field({ nullable: true })
-  dateOfBirth: Date;
+  dateOfBirth?: Date;
 
   @Column({ nullable: true, select: false }) // Hidden by default
   @Field({ nullable: true })

@@ -36,31 +36,11 @@ export class PatientService {
       .addSelect('patient.ssn')
       .where('patient.id = :id', { id })
       .getOne();
-    
-    if (!patient) {
-      throw new NotFoundException(`Patient with ID ${id} not found`);
-    }
-    return patient;
-  }
-
-  async findOneWithDOB(id: number): Promise<Patient> {
-    const patient = await this.patientRepository
-      .createQueryBuilder('patient')
-      .addSelect('patient.dateOfBirth')
-      .where('patient.id = :id', { id })
-      .getOne();
 
     if (!patient) {
       throw new NotFoundException(`Patient with ID ${id} not found`);
     }
     return patient;
-  }
-
-  async findAllWithDOB(): Promise<Patient[]> {
-    return this.patientRepository
-      .createQueryBuilder('patient')
-      .addSelect('patient.dateOfBirth')
-      .getMany();
   }
 
   async update(

@@ -149,6 +149,163 @@ const query = buildPatientQuery('patients', fields);
 3. **Service Level**: Business logic validation
 4. **Database Level**: Schema constraints and relationships
 
+### GraphQL Query Anatomy
+
+#### **Basic Structure**
+```graphql
+query GetPatients {
+  patients {
+    id
+    firstName
+    lastName
+  }
+}
+```
+
+**Components:**
+- `query` - Operation type (can also be `mutation` or `subscription`)
+- `GetPatients` - Operation name (optional but recommended)
+- `patients` - Field name (resolver name)
+
+#### **Field Selection**
+```graphql
+query {
+  patients {
+    id          # Field
+    firstName   # Field
+    lastName    # Field
+    email {     # Nested object
+      address   # Nested field
+      verified  # Nested field
+    }
+  }
+}
+```
+
+#### **Arguments**
+```graphql
+query {
+  patient(id: 1) {           # id: 1 is an argument
+    firstName
+    lastName
+  }
+  
+  patients(limit: 10, offset: 0) {  # Multiple arguments
+    id
+    firstName
+  }
+}
+```
+
+#### **Variables** (Dynamic Values)
+```graphql
+query GetPatient($patientId: Int!) {
+  patient(id: $patientId) {
+    id
+    firstName
+    lastName
+  }
+}
+
+# Variables sent separately:
+{
+  "patientId": 1
+}
+```
+
+#### **Fragments** (Reusable Field Sets)
+```graphql
+fragment PatientFields on Patient {
+  id
+  firstName
+  lastName
+  email
+}
+
+query {
+  patients {
+    ...PatientFields
+    phone  # Additional field
+  }
+}
+```
+
+#### **Aliases** (Rename Fields)
+```graphql
+query {
+  firstPatient: patient(id: 1) {
+    firstName
+  }
+  secondPatient: patient(id: 2) {
+    firstName
+  }
+}
+```
+
+#### **Complete Example**
+```graphql
+query GetPatientsWithDetails($limit: Int = 10) {
+  patients(limit: $limit) {
+    id
+    firstName
+    lastName
+    email
+    address {
+      street
+      city
+      country
+    }
+    appointments {
+      date
+      doctor {
+        name
+        specialty
+      }
+    }
+  }
+}
+```
+
+#### **Key Concepts**
+- **Operation Type**: `query`, `mutation`, `subscription`
+- **Field Names**: Must match resolver names
+- **Arguments**: Passed to resolvers
+- **Variables**: Dynamic values (prefixed with `$`)
+- **Nested Objects**: Represent relationships
+- **Fragments**: Reusable field sets
+- **Aliases**: Rename fields in response
+
+### Resolver Types
+
+#### **Query Resolvers** (Required for Entry Points)
+```typescript
+@Resolver(() => Patient)
+export class PatientResolver {
+  // Required - this is how clients access your data
+  @Query(() => [Patient])
+  async patients(): Promise<Patient[]> {
+    return this.patientService.findAll();
+  }
+}
+```
+
+#### **Field Resolvers** (Optional - for Complex Logic)
+```typescript
+@Resolver(() => Patient)
+export class PatientResolver {
+  // Optional - only if you need custom logic
+  @ResolveField(() => String)
+  fullName(@Parent() patient: Patient): string {
+    return `${patient.firstName} ${patient.lastName}`;
+  }
+}
+```
+
+#### **When Resolvers Are Needed**
+- **Query Resolvers**: Required for entry points (`@Query()`)
+- **Field Resolvers**: Optional for custom logic (`@ResolveField()`)
+- **Simple Fields**: Automatic - no resolver needed
+
 ## 🚀 **Quick Start**
 
 ### Backend (NestJS + GraphQL + Prisma)
