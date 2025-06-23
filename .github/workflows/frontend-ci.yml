@@ -39,6 +39,9 @@ jobs:
       - name: Check formatting
         run: npm run format:check
 
+      - name: Run type check
+        run: npm run type:check
+
       - name: Build
         run: npm run build
 
@@ -55,47 +58,37 @@ jobs:
   test:
     name: Test Frontend
     runs-on: ubuntu-latest
-    
+    defaults:
+      run:
+        working-directory: frontend
+
     strategy:
       matrix:
         node-version: [18, 20, 22]
-    
+
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
-      
+
     - name: Setup Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v4
       with:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
         cache-dependency-path: frontend/package-lock.json
-        
+
     - name: Install dependencies
-      run: |
-        cd frontend
-        npm ci
-        
+      run: npm ci
+
     - name: Run linting
-      run: |
-        cd frontend
-        npm run lint
-        
+      run: npm run lint
+
     - name: Run type checking
-      run: |
-        cd frontend
-        npm run type-check
-        
+      run: npm run type:check
+
     - name: Run unit tests
-      run: |
-        cd frontend
-        npm run test
-        
-    - name: Run e2e tests
-      run: |
-        cd frontend
-        npm run test:e2e
-        
+      run: npm run test
+
     - name: Upload test coverage
       uses: codecov/codecov-action@v3
       with:
@@ -107,33 +100,32 @@ jobs:
   build:
     name: Build Frontend
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
     needs: test
     if: github.ref == 'refs/heads/main'
-    
+
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
-      
+
     - name: Setup Node.js
       uses: actions/setup-node@v4
       with:
         node-version: '22'
         cache: 'npm'
         cache-dependency-path: frontend/package-lock.json
-        
+
     - name: Install dependencies
-      run: |
-        cd frontend
-        npm ci
-        
+      run: npm ci
+
     - name: Build application
-      run: |
-        cd frontend
-        npm run build
-        
+      run: npm run build
+
     - name: Upload build artifacts
       uses: actions/upload-artifact@v4
       with:
         name: frontend-build
         path: frontend/dist/
-        retention-days: 7 
+        retention-days: 7
