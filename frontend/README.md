@@ -92,6 +92,25 @@ function App() {
 }
 ```
 
+## 🎣 **Custom Hooks**
+
+The app uses custom hooks to separate data fetching logic from UI components.
+
+### Patient Data Hooks
+```typescript
+// Fetch all patients
+const { loading, error, patients } = useApiPatientList();
+
+// Fetch single patient
+const { loading, error, patient } = useApiPatient(id);
+```
+
+### Benefits
+- **Separation of Concerns**: Data logic separated from UI
+- **Reusability**: Hooks can be used across multiple components
+- **Testability**: Easier to test data logic independently
+- **Type Safety**: Shared types across components
+
 ## 🛣️ **Routing**
 
 The app uses **React Router v7.6.2** in **Declarative Mode** with Browser Router for clean URLs.

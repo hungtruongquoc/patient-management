@@ -1,31 +1,9 @@
-import { useQuery, gql } from '@apollo/client';
 import { Users, Mail, Phone } from 'lucide-react';
 import { Link } from 'react-router-dom';
-
-const GET_PATIENTS = gql`
-  query GetPatients {
-    patients {
-      id
-      firstName
-      lastName
-      email
-      phone
-    }
-  }
-`;
-
-interface Patient {
-  id: number;
-  firstName: string;
-  lastName: string;
-  email: string;
-  phone: string;
-}
+import { useApiPatientList } from '../hooks/useApiPatientList';
 
 function PatientList() {
-  const { loading, error, data } = useQuery<{ patients: Patient[] }>(
-    GET_PATIENTS
-  );
+  const { loading, error, patients } = useApiPatientList();
 
   if (loading) {
     return (
@@ -50,11 +28,11 @@ function PatientList() {
       <div className="flex items-center mb-6">
         <Users className="h-6 w-6 text-blue-600 mr-2" />
         <h2 className="text-xl font-semibold text-gray-900">
-          Patients ({data?.patients.length || 0})
+          Patients ({patients.length})
         </h2>
       </div>
 
-      {data?.patients.length === 0 ? (
+      {patients.length === 0 ? (
         <div className="text-center py-12">
           <Users className="h-12 w-12 text-gray-400 mx-auto mb-4" />
           <h3 className="text-lg font-medium text-gray-900 mb-2">
@@ -64,7 +42,7 @@ function PatientList() {
         </div>
       ) : (
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {data?.patients.map(patient => (
+          {patients.map(patient => (
             <div
               key={patient.id}
               className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow"
