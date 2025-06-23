@@ -4,12 +4,15 @@ import { CreatePatientInput } from './dto/create-patient.input';
 import { UpdatePatientInput } from './dto/update-patient.input';
 import { PatientService } from './patient.service';
 import { AppLogger } from '../common/logging/app-logger';
+import { UseGuards } from '@nestjs/common';
+import { GraphQLJwtGuard } from '../auth/graphql-jwt.guard';
 
 @Resolver(() => Patient)
 export class PatientResolver {
   constructor(private readonly patientService: PatientService) {}
 
   @Query(() => [Patient])
+  @UseGuards(GraphQLJwtGuard)
   async patients(): Promise<Patient[]> {
     AppLogger.info('Fetching all patients', { operation: 'patients.query' });
     const result = await this.patientService.findAll();
