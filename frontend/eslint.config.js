@@ -24,9 +24,6 @@ export default [
       parserOptions: {
         ecmaVersion: 'latest',
         sourceType: 'module',
-        ecmaFeatures: {
-          jsx: true,
-        },
       },
       globals: {
         ...globals.browser,
@@ -76,9 +73,6 @@ export default [
     languageOptions: {
       ecmaVersion: 'latest',
       sourceType: 'module',
-      ecmaFeatures: {
-        jsx: true,
-      },
       globals: {
         ...globals.browser,
       },
@@ -101,6 +95,19 @@ export default [
       react: {
         version: 'detect',
       },
+    },
+  },
+  {
+    files: ['server.js'],
+    languageOptions: {
+      ecmaVersion: 'latest',
+      sourceType: 'script', // CommonJS
+      globals: {
+        ...globals.node,
+      },
+    },
+    rules: {
+      'no-console': 'off', // Allow console.log in server files
     },
   },
   {

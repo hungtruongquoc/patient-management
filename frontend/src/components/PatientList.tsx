@@ -24,7 +24,7 @@ function PatientList() {
   }
 
   return (
-    <div>
+    <>
       <div className="flex items-center mb-6">
         <Users className="h-6 w-6 text-blue-600 mr-2" />
         <h2 className="text-xl font-semibold text-gray-900">
@@ -47,7 +47,7 @@ function PatientList() {
           ))}
         </div>
       )}
-    </div>
+    </>
   );
 }
 

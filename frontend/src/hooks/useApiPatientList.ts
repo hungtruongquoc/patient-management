@@ -1,4 +1,4 @@
-import { useQuery, gql } from '@apollo/client';
+import { useQuery, gql, ApolloError } from '@apollo/client';
 
 const GET_PATIENTS = gql`
   query GetPatients {
@@ -32,7 +32,21 @@ interface Patient {
   phone: string;
 }
 
-export function useApiPatientList() {
+// Return type for useApiPatientList hook
+interface UseApiPatientListReturn {
+  loading: boolean;
+  error: ApolloError | undefined;
+  patients: Patient[];
+}
+
+// Return type for useApiPatient hook
+interface UseApiPatientReturn {
+  loading: boolean;
+  error: ApolloError | undefined;
+  patient: Patient | undefined;
+}
+
+export function useApiPatientList(): UseApiPatientListReturn {
   const { loading, error, data } = useQuery<{ patients: Patient[] }>(
     GET_PATIENTS
   );
@@ -44,14 +58,11 @@ export function useApiPatientList() {
   };
 }
 
-export function useApiPatient(id: number) {
-  const { loading, error, data } = useQuery<{ patient: Patient }>(
-    GET_PATIENT,
-    {
-      variables: { id },
-      skip: !id,
-    }
-  );
+export function useApiPatient(id: number): UseApiPatientReturn {
+  const { loading, error, data } = useQuery<{ patient: Patient }>(GET_PATIENT, {
+    variables: { id },
+    skip: !id,
+  });
 
   return {
     loading,
@@ -60,4 +71,4 @@ export function useApiPatient(id: number) {
   };
 }
 
-export type { Patient }; 
+export type { Patient };
