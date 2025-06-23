@@ -90,9 +90,6 @@ function PatientList() {
               </div>
 
               <div className="mt-4 pt-4 border-t border-gray-100">
-                {/*<button className="text-sm text-blue-600 hover:text-blue-800 font-medium">*/}
-                {/*  View Details*/}
-                {/*</button>*/}
                 <Link
                   to={`/patients/${patient.id}`}
                   className="text-sm text-blue-600 hover:text-blue-800 font-medium"

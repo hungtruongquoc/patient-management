@@ -9,9 +9,13 @@ function App() {
     <ApolloProvider client={client}>
       <Router>
         <Routes>
-          <Route path="/" element={<Layout />}>
-            <Route index element={<PatientList />} />
-            <Route path="patients" element={<PatientList />} />
+          <Route element={<Layout />}>
+            <Route path="/">
+              <Route path="patients">
+                <Route index element={<PatientList />} />
+                <Route path=":id" element={<PatientList />} />
+              </Route>
+            </Route>
             {/* Add more routes here as we build them */}
             {/* <Route path="patients/:id" element={<PatientDetails />} /> */}
             {/* <Route path="patients/new" element={<PatientForm />} /> */}

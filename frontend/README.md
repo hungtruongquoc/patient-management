@@ -124,15 +124,6 @@ The app uses a **Layout Route** pattern where:
 - All routes inherit the header navigation and layout styling
 - Clean separation between layout and page content
 
-### Routing Features
-- **Browser Router**: Clean URLs without hash (#)
-- **HTML5 History API**: Client-side navigation without page reloads
-- **Nested Routes**: Support for complex routing hierarchies
-- **Route Parameters**: Dynamic route segments (e.g., `/patients/:id`)
-
-### Production Considerations
-When deploying to production, ensure your web server is configured to serve `index.html` for all routes, allowing React Router to handle client-side routing.
-
 ## 🛣️ **Styling**
 
 Built with Tailwind CSS for rapid UI development:
