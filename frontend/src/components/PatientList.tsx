@@ -1,6 +1,7 @@
-import { Plus, Users } from 'lucide-react';
+import { Plus, Users, Shield } from 'lucide-react';
 import { useApiPatientList } from '@/hooks/useApiPatientList';
 import PatientCard from '@/components/PatientCard';
+import AuthenticationStatus from '@/components/AuthenticationStatus';
 import { Link } from 'react-router-dom';
 
 interface AddNewButtonProps {
@@ -8,22 +9,69 @@ interface AddNewButtonProps {
 }
 
 function PatientList() {
-  const { loading, error, patients } = useApiPatientList();
+  const {
+    loading,
+    error,
+    patients,
+    isAuthenticated,
+    tokenLoading,
+    fetchToken
+  } = useApiPatientList();
 
-  if (loading) {
+  // Show authentication status first
+  if (!isAuthenticated && !tokenLoading) {
     return (
-      <div className="flex items-center justify-center py-12">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600" />
-        <span className="ml-3 text-gray-600">Loading patients...</span>
+      <div className="space-y-6">
+        <AuthenticationStatus />
+        <div className="bg-blue-50 border border-blue-200 rounded-lg p-6 text-center">
+          <Shield className="h-12 w-12 text-blue-600 mx-auto mb-4" />
+          <h3 className="text-lg font-medium text-blue-900 mb-2">
+            Authentication Required
+          </h3>
+          <p className="text-blue-700 mb-4">
+            You need to authenticate to view patient data.
+          </p>
+          <button
+            onClick={fetchToken}
+            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+          >
+            Get Demo Token
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  if (loading || tokenLoading) {
+    return (
+      <div className="space-y-6">
+        <AuthenticationStatus />
+        <div className="flex items-center justify-center py-12">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600" />
+          <span className="ml-3 text-gray-600">
+            {tokenLoading ? 'Authenticating...' : 'Loading patients...'}
+          </span>
+        </div>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-        <h3 className="text-red-800 font-medium">Error loading patients</h3>
-        <p className="text-red-600 mt-1">{error.message}</p>
+      <div className="space-y-6">
+        <AuthenticationStatus />
+        <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+          <h3 className="text-red-800 font-medium">Error loading patients</h3>
+          <p className="text-red-600 mt-1">{error.message}</p>
+          {error.message.includes('Unauthorized') && (
+            <button
+              onClick={fetchToken}
+              className="mt-3 px-3 py-1 bg-red-600 text-white rounded text-sm hover:bg-red-700 transition-colors"
+            >
+              Refresh Authentication
+            </button>
+          )}
+        </div>
       </div>
     );
   }
@@ -42,7 +90,9 @@ function PatientList() {
   };
 
   return (
-    <>
+    <div className="space-y-6">
+      <AuthenticationStatus />
+
       <div className="flex items-center mb-6">
         <Users className="h-6 w-6 text-blue-600 mr-2" />
         <h2 className="text-xl font-semibold text-gray-900">
@@ -67,7 +117,7 @@ function PatientList() {
           ))}
         </div>
       )}
-    </>
+    </div>
   );
 }
 

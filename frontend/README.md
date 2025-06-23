@@ -92,17 +92,96 @@ function App() {
 }
 ```
 
+## 🔐 **JWT Authentication System**
+
+The app includes a comprehensive JWT authentication system for secure API access.
+
+### Token Management
+```typescript
+import { useDemoToken } from '@/contexts/TokenContext';
+
+function MyComponent() {
+  const {
+    token,
+    loading,
+    error,
+    fetchToken,
+    clearToken,
+    isAuthenticated
+  } = useDemoToken();
+
+  if (!isAuthenticated) {
+    return <button onClick={fetchToken}>Get Demo Token</button>;
+  }
+
+  return <div>Authenticated! Token: {token?.substring(0, 20)}...</div>;
+}
+```
+
+### Key Features
+- **Lazy Loading**: Uses `useLazyQuery` for on-demand token fetching
+- **Session Persistence**: Stores tokens in `sessionStorage` with key `"demoToken"`
+- **Auto-Recovery**: Loads existing tokens on app startup
+- **Refresh Capability**: Clear and fetch new tokens
+- **Apollo Integration**: Automatic JWT headers on all GraphQL requests
+
+### Authentication Flow
+1. **Get Token**: Call `fetchToken()` to get a demo JWT from backend
+2. **Auto-Storage**: Token automatically saved to sessionStorage
+3. **API Calls**: All GraphQL requests include `Authorization: Bearer <token>`
+4. **Persistence**: Token survives page refreshes until session ends
+
 ## 🎣 **Custom Hooks**
 
 The app uses custom hooks to separate data fetching logic from UI components.
 
-### Patient Data Hooks
+### Patient Data Hooks with Authentication
 ```typescript
-// Fetch all patients
-const { loading, error, patients } = useApiPatientList();
+// Fetch all patients (requires authentication)
+const {
+  loading,
+  error,
+  patients,
+  isAuthenticated,
+  fetchToken
+} = useApiPatientList();
 
-// Fetch single patient
-const { loading, error, patient } = useApiPatient(id);
+// Fetch single patient (requires authentication)
+const {
+  loading,
+  error,
+  patient,
+  isAuthenticated,
+  fetchToken
+} = useApiPatient(id);
+```
+
+### Authentication-Aware Usage
+```typescript
+function PatientComponent() {
+  const {
+    patients,
+    loading,
+    error,
+    isAuthenticated,
+    fetchToken
+  } = useApiPatientList();
+
+  if (!isAuthenticated) {
+    return <button onClick={fetchToken}>Authenticate First</button>;
+  }
+
+  if (loading) return <div>Loading patients...</div>;
+  if (error) return <div>Error: {error.message}</div>;
+
+  return (
+    <div>
+      {patients.map(patient => (
+        <div key={patient.id}>{patient.firstName} {patient.lastName}</div>
+      ))}
+    </div>
+  );
+}
 ```
 
 ### Benefits
@@ -110,6 +189,67 @@ const { loading, error, patient } = useApiPatient(id);
 - **Reusability**: Hooks can be used across multiple components
 - **Testability**: Easier to test data logic independently
 - **Type Safety**: Shared types across components
+- **Authentication Integration**: Built-in auth state management
+
+## 🔐 **Authentication Architecture**
+
+### Context Provider Setup
+The authentication system uses React Context to provide token state throughout the app:
+
+```typescript
+// App.tsx
+import { TokenProvider } from '@/contexts/TokenContext';
+
+function App() {
+  return (
+    <ApolloProvider client={client}>
+      <TokenProvider>
+        <Router>
+          {/* Your app components */}
+        </Router>
+      </TokenProvider>
+    </ApolloProvider>
+  );
+}
+```
+
+### Apollo Client Configuration
+JWT tokens are automatically included in all GraphQL requests:
+
+```typescript
+// lib/apollo-client.ts
+import { setContext } from '@apollo/client/link/context';
+
+const authLink = setContext((_, { headers }) => {
+  const token = sessionStorage.getItem('demoToken');
+
+  return {
+    headers: {
+      ...headers,
+      ...(token && { authorization: `Bearer ${token}` }),
+    },
+  };
+});
+```
+
+### Authentication States
+The system handles four main authentication states:
+
+- **Not Authenticated** - Shows "Get Token" button
+- **Loading** - Shows loading spinner during token fetch
+- **Error** - Shows error message with retry option
+- **Authenticated** - Shows data with token management controls
+
+### UI Components
+- **AuthenticationStatus** - Full status display with controls
+- **AuthenticationBadge** - Compact status indicator
+- **Integrated UI** - Authentication status in PatientList
+
+### Session Storage
+- **Key**: `"demoToken"`
+- **Persistence**: Survives page refreshes
+- **Cleanup**: Cleared when browser tab closes
+- **Manual Control**: Clear/refresh options available
 
 ## 📁 **Path Aliases**
 
@@ -129,6 +269,7 @@ import { useApiPatientList } from '@/hooks/useApiPatientList';
 - `@/hooks/*` - `src/hooks/*`
 - `@/lib/*` - `src/lib/*`
 - `@/types/*` - `src/types/*`
+- `@/contexts/*` - `src/contexts/*`
 
 ### Benefits
 - **Clean Imports**: No more `../` chains
