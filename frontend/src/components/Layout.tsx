@@ -16,7 +16,7 @@ function Layout({ children }: LayoutProps) {
   return (
     <div className="min-h-screen bg-gray-50 w-screen">
       {/* Header */}
-      <header className="bg-blue-100 shadow-sm border-b border-gray-200 p-8">
+      <header className="bg-blue-100 shadow-sm border-b border-gray-200 py-4">
         <div className="container mx-auto">
           <div className="flex items-center justify-between">
             <div className="flex items-center">
@@ -55,7 +55,8 @@ function Layout({ children }: LayoutProps) {
               </Link>
               <Link
                 to="/patients/new"
-                className="flex items-center px-3 py-2 rounded-md text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 transition-colors"
+                className="flex items-center px-3 py-2 rounded-md text-sm
+                font-medium text-white bg-blue-600 hover:bg-blue-700 transition-colors"
               >
                 <Plus className="h-4 w-4 mr-1" />
                 Add Patient
@@ -66,7 +67,7 @@ function Layout({ children }: LayoutProps) {
       </header>
 
       {/* Main Content */}
-      <main className="container mx-auto px-4 py-8">{children}</main>
+      <main className="container mx-auto py-4">{children}</main>
     </div>
   );
 }
