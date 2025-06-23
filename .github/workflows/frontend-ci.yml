@@ -42,9 +42,15 @@ jobs:
       - name: Build
         run: npm run build
 
-      # Uncomment if you add frontend tests
-      # - name: Run tests
-      #   run: npm test
+      - name: Run unit tests
+        run: npm run test:coverage
+
+      - name: Upload test coverage
+        uses: codecov/codecov-action@v3
+        with:
+          file: frontend/coverage/lcov.info
+          flags: frontend
+          name: frontend-coverage
 
   test:
     name: Test Frontend
