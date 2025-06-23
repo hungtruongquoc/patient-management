@@ -1,12 +1,7 @@
-import type { ReactNode } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, Outlet } from 'react-router-dom';
 import { Users, Plus, Home } from 'lucide-react';
 
-interface LayoutProps {
-  children: ReactNode;
-}
-
-function Layout({ children }: LayoutProps) {
+function Layout() {
   const location = useLocation();
 
   const isActive = (path: string) => {
@@ -67,7 +62,9 @@ function Layout({ children }: LayoutProps) {
       </header>
 
       {/* Main Content */}
-      <main className="container mx-auto py-4">{children}</main>
+      <main className="container mx-auto py-4">
+        <Outlet />
+      </main>
     </div>
   );
 }

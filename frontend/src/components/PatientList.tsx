@@ -1,5 +1,6 @@
 import { useQuery, gql } from '@apollo/client';
 import { Users, Mail, Phone } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 const GET_PATIENTS = gql`
   query GetPatients {
@@ -89,9 +90,15 @@ function PatientList() {
               </div>
 
               <div className="mt-4 pt-4 border-t border-gray-100">
-                <button className="text-sm text-blue-600 hover:text-blue-800 font-medium">
+                {/*<button className="text-sm text-blue-600 hover:text-blue-800 font-medium">*/}
+                {/*  View Details*/}
+                {/*</button>*/}
+                <Link
+                  to={`/patients/${patient.id}`}
+                  className="text-sm text-blue-600 hover:text-blue-800 font-medium"
+                >
                   View Details
-                </button>
+                </Link>
               </div>
             </div>
           ))}

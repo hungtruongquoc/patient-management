@@ -92,7 +92,48 @@ function App() {
 }
 ```
 
-## 🎨 **Styling**
+## 🛣️ **Routing**
+
+The app uses **React Router v7.6.2** in **Declarative Mode** with Browser Router for clean URLs.
+
+### Routing Mode: Declarative Mode
+- Uses `<Routes>` and `<Route>` components
+- Routes are defined as JSX elements
+- Traditional React Router approach
+
+### Current Routes
+```tsx
+<Router>
+  <Routes>
+    <Route path="/" element={<Layout />}>
+      <Route index element={<PatientList />} />
+      <Route path="patients" element={<PatientList />} />
+      {/* Future routes */}
+      {/* <Route path="patients/:id" element={<PatientDetails />} /> */}
+      {/* <Route path="patients/new" element={<PatientForm />} /> */}
+      {/* <Route path="patients/:id/edit" element={<PatientForm />} /> */}
+    </Route>
+  </Routes>
+</Router>
+```
+
+### Layout Route Pattern
+The app uses a **Layout Route** pattern where:
+- `<Layout />` is the parent route that provides the common UI structure
+- `<Outlet />` renders the child routes in the main content area
+- All routes inherit the header navigation and layout styling
+- Clean separation between layout and page content
+
+### Routing Features
+- **Browser Router**: Clean URLs without hash (#)
+- **HTML5 History API**: Client-side navigation without page reloads
+- **Nested Routes**: Support for complex routing hierarchies
+- **Route Parameters**: Dynamic route segments (e.g., `/patients/:id`)
+
+### Production Considerations
+When deploying to production, ensure your web server is configured to serve `index.html` for all routes, allowing React Router to handle client-side routing.
+
+## 🛣️ **Styling**
 
 Built with Tailwind CSS for rapid UI development:
 

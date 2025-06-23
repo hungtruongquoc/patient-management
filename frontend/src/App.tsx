@@ -8,16 +8,16 @@ function App() {
   return (
     <ApolloProvider client={client}>
       <Router>
-        <Layout>
-          <Routes>
-            <Route path="/" element={<PatientList />} />
-            <Route path="/patients" element={<PatientList />} />
+        <Routes>
+          <Route path="/" element={<Layout />}>
+            <Route index element={<PatientList />} />
+            <Route path="patients" element={<PatientList />} />
             {/* Add more routes here as we build them */}
-            {/* <Route path="/patients/:id" element={<PatientDetails />} /> */}
-            {/* <Route path="/patients/new" element={<PatientForm />} /> */}
-            {/* <Route path="/patients/:id/edit" element={<PatientForm />} /> */}
-          </Routes>
-        </Layout>
+            {/* <Route path="patients/:id" element={<PatientDetails />} /> */}
+            {/* <Route path="patients/new" element={<PatientForm />} /> */}
+            {/* <Route path="patients/:id/edit" element={<PatientForm />} /> */}
+          </Route>
+        </Routes>
       </Router>
     </ApolloProvider>
   );
