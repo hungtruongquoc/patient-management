@@ -1,6 +1,11 @@
 import { render, screen, waitFor } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { useQuery } from '@apollo/client';
+import {
+  useQuery,
+  ApolloClient,
+  ObservableQuery,
+  ApolloError,
+} from '@apollo/client';
 import PatientList from './PatientList';
 
 // Mock the useQuery hook
@@ -44,14 +49,14 @@ vi.mocked(useQuery).mockReturnValue({
   refetch: vi.fn(),
   networkStatus: 7,
   called: true,
-  client: {} as any,
+  client: {} as ApolloClient<unknown>,
   variables: {},
   fetchMore: vi.fn(),
   subscribeToMore: vi.fn(),
   updateQuery: vi.fn(),
   startPolling: vi.fn(),
   stopPolling: vi.fn(),
-  observable: {} as any,
+  observable: {} as ObservableQuery<unknown, Record<string, unknown>>,
   reobserve: vi.fn(),
 });
 
@@ -92,14 +97,14 @@ describe('PatientList', () => {
       refetch: vi.fn(),
       networkStatus: 1,
       called: true,
-      client: {} as any,
+      client: {} as ApolloClient<unknown>,
       variables: {},
       fetchMore: vi.fn(),
       subscribeToMore: vi.fn(),
       updateQuery: vi.fn(),
       startPolling: vi.fn(),
       stopPolling: vi.fn(),
-      observable: {} as any,
+      observable: {} as ObservableQuery<unknown, Record<string, unknown>>,
       reobserve: vi.fn(),
     });
 
@@ -110,19 +115,19 @@ describe('PatientList', () => {
   it('shows error state', () => {
     vi.mocked(useQuery).mockReturnValue({
       loading: false,
-      error: { message: 'Failed to fetch patients' } as any,
+      error: { message: 'Failed to fetch patients' } as ApolloError,
       data: undefined,
       refetch: vi.fn(),
       networkStatus: 7,
       called: true,
-      client: {} as any,
+      client: {} as ApolloClient<unknown>,
       variables: {},
       fetchMore: vi.fn(),
       subscribeToMore: vi.fn(),
       updateQuery: vi.fn(),
       startPolling: vi.fn(),
       stopPolling: vi.fn(),
-      observable: {} as any,
+      observable: {} as ObservableQuery<unknown, Record<string, unknown>>,
       reobserve: vi.fn(),
     });
 
@@ -140,14 +145,14 @@ describe('PatientList', () => {
       refetch: vi.fn(),
       networkStatus: 7,
       called: true,
-      client: {} as any,
+      client: {} as ApolloClient<unknown>,
       variables: {},
       fetchMore: vi.fn(),
       subscribeToMore: vi.fn(),
       updateQuery: vi.fn(),
       startPolling: vi.fn(),
       stopPolling: vi.fn(),
-      observable: {} as any,
+      observable: {} as ObservableQuery<unknown, Record<string, unknown>>,
       reobserve: vi.fn(),
     });
 
