@@ -1,6 +1,6 @@
-import { Users, Mail, Phone } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Users } from 'lucide-react';
 import { useApiPatientList } from '@/hooks/useApiPatientList';
+import PatientCard from '@/components/PatientCard';
 
 function PatientList() {
   const { loading, error, patients } = useApiPatientList();
@@ -43,39 +43,7 @@ function PatientList() {
       ) : (
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           {patients.map(patient => (
-            <div
-              key={patient.id}
-              className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow"
-            >
-              <div className="flex items-start justify-between mb-4">
-                <div>
-                  <h3 className="text-lg font-semibold text-gray-900">
-                    {patient.firstName} {patient.lastName}
-                  </h3>
-                  <p className="text-sm text-gray-500">ID: {patient.id}</p>
-                </div>
-              </div>
-
-              <div className="space-y-3">
-                <div className="flex items-center text-sm text-gray-600">
-                  <Mail className="h-4 w-4 mr-2 text-gray-400" />
-                  {patient.email}
-                </div>
-                <div className="flex items-center text-sm text-gray-600">
-                  <Phone className="h-4 w-4 mr-2 text-gray-400" />
-                  {patient.phone}
-                </div>
-              </div>
-
-              <div className="mt-4 pt-4 border-t border-gray-100">
-                <Link
-                  to={`/patients/${patient.id}`}
-                  className="text-sm text-blue-600 hover:text-blue-800 font-medium"
-                >
-                  View Details
-                </Link>
-              </div>
-            </div>
+            <PatientCard key={patient.id} patient={patient} />
           ))}
         </div>
       )}
