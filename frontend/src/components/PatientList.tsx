@@ -22,12 +22,14 @@ interface Patient {
 }
 
 function PatientList() {
-  const { loading, error, data } = useQuery<{ patients: Patient[] }>(GET_PATIENTS);
+  const { loading, error, data } = useQuery<{ patients: Patient[] }>(
+    GET_PATIENTS
+  );
 
   if (loading) {
     return (
       <div className="flex items-center justify-center py-12">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600" />
         <span className="ml-3 text-gray-600">Loading patients...</span>
       </div>
     );
@@ -54,12 +56,14 @@ function PatientList() {
       {data?.patients.length === 0 ? (
         <div className="text-center py-12">
           <Users className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-          <h3 className="text-lg font-medium text-gray-900 mb-2">No patients found</h3>
+          <h3 className="text-lg font-medium text-gray-900 mb-2">
+            No patients found
+          </h3>
           <p className="text-gray-600">Start by adding your first patient.</p>
         </div>
       ) : (
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {data?.patients.map((patient) => (
+          {data?.patients.map(patient => (
             <div
               key={patient.id}
               className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow"
@@ -97,4 +101,4 @@ function PatientList() {
   );
 }
 
-export default PatientList; 
+export default PatientList;
