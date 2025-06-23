@@ -19,6 +19,7 @@
   "dependencies": {
     "@apollo/client": "^3.13.8",
     "@tailwindcss/forms": "^0.5.10",
+    "@tailwindcss/vite": "^4.1.10",
     "graphql": "^16.11.0",
     "lucide-react": "^0.522.0",
     "react": "^19.1.0",

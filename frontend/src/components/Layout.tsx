@@ -14,11 +14,11 @@ function Layout({ children }: LayoutProps) {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 w-screen">
       {/* Header */}
-      <header className="bg-white shadow-sm border-b border-gray-200">
-        <div className="container mx-auto px-4">
-          <div className="flex items-center justify-between h-16">
+      <header className="bg-blue-100 shadow-sm border-b border-gray-200 p-8">
+        <div className="container mx-auto">
+          <div className="flex items-center justify-between">
             <div className="flex items-center">
               <Link
                 to="/"
