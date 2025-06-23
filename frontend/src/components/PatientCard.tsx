@@ -14,7 +14,6 @@ function PatientCard({ patient }: PatientCardProps) {
           <h3 className="text-lg font-semibold text-gray-900">
             {patient.firstName} {patient.lastName}
           </h3>
-          <p className="text-sm text-gray-500">ID: {patient.id}</p>
         </div>
       </div>
 
@@ -41,4 +40,4 @@ function PatientCard({ patient }: PatientCardProps) {
   );
 }
 
-export default PatientCard; 
+export default PatientCard;
