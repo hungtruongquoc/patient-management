@@ -1,8 +1,8 @@
 import { ApolloProvider } from '@apollo/client';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import { client } from './lib/apollo-client';
-import Layout from './components/Layout';
-import PatientList from './components/PatientList';
+import { client } from '@/lib/apollo-client';
+import Layout from '@/components/Layout';
+import PatientList from '@/components/PatientList';
 
 function App() {
   return (

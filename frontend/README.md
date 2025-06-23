@@ -111,6 +111,70 @@ const { loading, error, patient } = useApiPatient(id);
 - **Testability**: Easier to test data logic independently
 - **Type Safety**: Shared types across components
 
+## 📁 **Path Aliases**
+
+The app uses TypeScript path aliases for clean imports:
+
+```typescript
+// Instead of relative paths like:
+import { useApiPatientList } from '../hooks/useApiPatientList';
+
+// Use clean aliases:
+import { useApiPatientList } from '@/hooks/useApiPatientList';
+```
+
+### Available Aliases
+- `@/*` - `src/*`
+- `@/components/*` - `src/components/*`
+- `@/hooks/*` - `src/hooks/*`
+- `@/lib/*` - `src/lib/*`
+- `@/types/*` - `src/types/*`
+
+### Benefits
+- **Clean Imports**: No more `../` chains
+- **Maintainable**: Easy to move files without breaking imports
+- **Readable**: Clear indication of import source
+- **IDE Support**: Better autocomplete and navigation
+
+## ⚙️ **TypeScript Configuration**
+
+The project uses a dual TypeScript configuration setup for optimal development experience.
+
+### File Structure
+```
+frontend/
+├── tsconfig.json          # Root config (references both)
+├── tsconfig.app.json      # App code (src/)
+├── tsconfig.node.json     # Build tools (vite.config.ts)
+└── src/
+    ├── components/
+    ├── hooks/
+    └── lib/
+```
+
+### Why Two Config Files?
+
+#### **`tsconfig.app.json` - Application Code**
+- **Target**: React components, hooks, utilities in `src/`
+- **Environment**: Browser environment (DOM, React, etc.)
+- **Libs**: `["ES2020", "DOM", "DOM.Iterable"]` - Browser APIs
+- **JSX**: `"react-jsx"` - React JSX transformation
+- **Module**: `"ESNext"` - Modern ES modules
+
+#### **`tsconfig.node.json` - Build Tools**
+- **Target**: Vite config, build scripts, Node.js tools
+- **Environment**: Node.js environment (file system, path, etc.)
+- **Libs**: `["ES2023"]` - Node.js APIs
+- **Types**: `["node"]` - Node.js type definitions
+- **Module**: `"ESNext"` - Modern ES modules
+
+### Benefits
+- **Environment-Specific**: Different APIs for browser vs Node.js
+- **Performance**: Faster compilation (only relevant files)
+- **Type Safety**: Correct types for each environment
+- **Maintainability**: Clear separation of concerns
+- **IDE Support**: Better IntelliSense for each context
+
 ## 🛣️ **Routing**
 
 The app uses **React Router v7.6.2** in **Declarative Mode** with Browser Router for clean URLs.

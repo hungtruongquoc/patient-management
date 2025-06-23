@@ -1,6 +1,6 @@
 import { Users, Mail, Phone } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { useApiPatientList } from '../hooks/useApiPatientList';
+import { useApiPatientList } from '@/hooks/useApiPatientList';
 
 function PatientList() {
   const { loading, error, patients } = useApiPatientList();
