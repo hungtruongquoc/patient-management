@@ -1,6 +1,11 @@
-import { Users } from 'lucide-react';
+import { Plus, Users } from 'lucide-react';
 import { useApiPatientList } from '@/hooks/useApiPatientList';
 import PatientCard from '@/components/PatientCard';
+import { Link } from 'react-router-dom';
+
+interface AddNewButtonProps {
+  className?: string;
+}
 
 function PatientList() {
   const { loading, error, patients } = useApiPatientList();
@@ -23,6 +28,19 @@ function PatientList() {
     );
   }
 
+  const AddNewButton = function ({ className }: AddNewButtonProps) {
+    return (
+      <Link
+        to="/patients/new"
+        className={`flex items-center px-3 py-2 rounded-md text-sm
+          font-medium text-white bg-blue-600 hover:bg-blue-700 transition-colors ${className}`}
+      >
+        <Plus className="h-4 w-4 mr-1" />
+        Add Patient
+      </Link>
+    );
+  };
+
   return (
     <>
       <div className="flex items-center mb-6">
@@ -30,6 +48,7 @@ function PatientList() {
         <h2 className="text-xl font-semibold text-gray-900">
           Patients ({patients.length})
         </h2>
+        <AddNewButton className="ml-auto" />
       </div>
 
       {patients.length === 0 ? (
@@ -39,6 +58,7 @@ function PatientList() {
             No patients found
           </h3>
           <p className="text-gray-600">Start by adding your first patient.</p>
+          <AddNewButton />
         </div>
       ) : (
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">

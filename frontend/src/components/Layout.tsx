@@ -1,5 +1,5 @@
 import { Link, useLocation, Outlet } from 'react-router-dom';
-import { Users, Plus, Home } from 'lucide-react';
+import { Users, Home } from 'lucide-react';
 
 function Layout() {
   const location = useLocation();
@@ -47,14 +47,6 @@ function Layout() {
               >
                 <Users className="h-4 w-4 mr-1" />
                 Patients
-              </Link>
-              <Link
-                to="/patients/new"
-                className="flex items-center px-3 py-2 rounded-md text-sm
-                font-medium text-white bg-blue-600 hover:bg-blue-700 transition-colors"
-              >
-                <Plus className="h-4 w-4 mr-1" />
-                Add Patient
               </Link>
             </nav>
           </div>
