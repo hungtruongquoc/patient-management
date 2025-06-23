@@ -145,6 +145,46 @@ Built with Tailwind CSS for rapid UI development:
 </div>
 ```
 
+## 🐳 **Docker**
+
+The frontend app includes Docker support using **Bun** runtime for faster builds and **Alpine Linux** with Express for a lightweight production server.
+
+### Production Build
+```bash
+# Build production image
+npm run docker:build
+
+# Run production container
+npm run docker:run
+
+# Or use docker-compose
+npm run docker:compose:up
+```
+
+### Development Build
+```bash
+# Build development image
+npm run docker:build:dev
+
+# Run development container with hot reload
+npm run docker:run:dev
+```
+
+### Docker Features
+- **Bun Runtime**: Faster dependency installation and builds
+- **Alpine Linux**: Minimal base image (~5MB)
+- **Express Server**: Lightweight Node.js server for SPA routing
+- **Multi-stage Build**: Optimized production image
+- **SPA Routing**: Proper handling of React Router routes
+- **Development Mode**: Hot reloading with volume mounts
+
+### Docker Files
+- `Dockerfile` - Production build with Alpine + Express
+- `Dockerfile.dev` - Development build with hot reloading
+- `docker-compose.yml` - Multi-service orchestration
+- `server.js` - Express server for SPA routing
+- `.dockerignore` - Optimized build context
+
 ## 🚀 **Development**
 
 1. **Start the backend** (NestJS GraphQL server)

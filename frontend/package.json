@@ -14,7 +14,13 @@
     "test:ui": "vitest --ui",
     "test:run": "vitest run",
     "test:coverage": "vitest run --coverage",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "docker:build": "docker build -t patient-management-frontend .",
+    "docker:build:dev": "docker build -f Dockerfile.dev -t patient-management-frontend:dev .",
+    "docker:run": "docker run -p 80:80 patient-management-frontend",
+    "docker:run:dev": "docker run -p 5173:5173 patient-management-frontend:dev",
+    "docker:compose:up": "docker-compose up -d",
+    "docker:compose:down": "docker-compose down"
   },
   "dependencies": {
     "@apollo/client": "^3.13.8",
