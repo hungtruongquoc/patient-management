@@ -91,4 +91,9 @@ export class Patient {
   @Column({ nullable: true })
   @Field({ nullable: true })
   deletedAt?: Date;
+
+  @Field(() => String, { nullable: true })
+  get ssnLastFour(): string | null {
+    return this.ssn ? `****${this.ssn.slice(-4)}` : null;
+  }
 }
