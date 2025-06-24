@@ -94,6 +94,6 @@ export class Patient {
 
   @Field(() => String, { nullable: true })
   get ssnLastFour(): string | null {
-    return this.ssn ? `****${this.ssn.slice(-4)}` : null;
+    return this.ssn ? `*****${this.ssn.slice(-4)}` : null;
   }
 }
