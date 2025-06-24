@@ -1,5 +1,6 @@
 import { InputType, Field } from '@nestjs/graphql';
 
+
 import {
   IsEmail,
   IsNotEmpty,
@@ -7,7 +8,9 @@ import {
   IsDateString,
   MinLength,
   MaxLength,
-  IsPhoneNumber, IsNumberString, Length,
+  IsPhoneNumber,
+  IsNumberString,
+  Length,
 } from 'class-validator';
 
 @InputType()
@@ -43,7 +46,7 @@ export class CreatePatientInput {
   @Field()
   @IsNotEmpty({ message: 'Date of birth is required' })
   @IsDateString({}, { message: 'Date of birth must be a valid date' })
-  dateOfBirth: Date;
+  dateOfBirth: string;
 
   @Field()
   @IsNotEmpty({ message: 'SSN is required' })
