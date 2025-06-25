@@ -8,10 +8,11 @@ import { PatientModule } from './patient/patient.module';
 import { DatabaseModule } from './database/database.module';
 import { AuthModule } from './auth/auth.module';
 import { UserModule } from './user/user.module';
-import { APP_INTERCEPTOR, APP_GUARD } from '@nestjs/core';
+import { APP_INTERCEPTOR, APP_GUARD, APP_FILTER } from '@nestjs/core';
 import { TraceInterceptor } from './common/interceptors/trace.interceptor';
 import { ThrottlerModule } from '@nestjs/throttler';
 import { CustomThrottleGuard } from './common/guards/custom.throttle.guard';
+import { GlobalExceptionFilter } from './common/filters/global-exception.filter';
 import { InMemoryLRUCache } from '@apollo/utils.keyvaluecache';
 import { Request, Response } from 'express';
 
@@ -70,6 +71,10 @@ interface GraphQLContext {
     {
       provide: APP_GUARD,
       useClass: CustomThrottleGuard,
+    },
+    {
+      provide: APP_FILTER,
+      useClass: GlobalExceptionFilter,
     },
   ],
 })
