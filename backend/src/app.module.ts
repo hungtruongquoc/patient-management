@@ -10,8 +10,9 @@ import { AuthModule } from './auth/auth.module';
 import { UserModule } from './user/user.module';
 import { APP_INTERCEPTOR, APP_GUARD } from '@nestjs/core';
 import { TraceInterceptor } from './common/interceptors/trace.interceptor';
-import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
+import { ThrottlerModule } from '@nestjs/throttler';
 import { CustomThrottleGuard } from './common/guards/custom.throttle.guard';
+import { InMemoryLRUCache } from '@apollo/utils.keyvaluecache';
 
 interface GraphQLRequest {
   headers?: {
@@ -29,6 +30,10 @@ interface GraphQLRequest {
       playground: process.env.APP_ENV === 'local',
       introspection: process.env.APP_ENV === 'local',
       context: ({ req }: { req: GraphQLRequest }) => ({ req }), // Pass request object to GraphQL context for authentication
+      cache: new InMemoryLRUCache({
+        maxSize: Math.pow(2, 20) * 10, // 10MB
+        ttl: 300_000,
+      }),
     }),
     DatabaseModule,
     PatientModule,
