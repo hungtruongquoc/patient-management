@@ -61,7 +61,11 @@ export class PatientService {
     updatePatientInput: UpdatePatientInput,
   ): Promise<Patient> {
     await this.patientRepository.update(id, updatePatientInput);
-    return this.findOne(id);
+    return await this.patientRepository
+      .createQueryBuilder('patient')
+      .addSelect('patient.ssn') // This adds ssn to the default selected fields
+      .where('patient.id = :id', { id })
+      .getOneOrFail();
   }
 
   async remove(id: number): Promise<Patient> {
