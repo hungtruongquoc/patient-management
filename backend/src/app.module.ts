@@ -13,12 +13,11 @@ import { TraceInterceptor } from './common/interceptors/trace.interceptor';
 import { ThrottlerModule } from '@nestjs/throttler';
 import { CustomThrottleGuard } from './common/guards/custom.throttle.guard';
 import { InMemoryLRUCache } from '@apollo/utils.keyvaluecache';
+import { Request, Response } from 'express';
 
-interface GraphQLRequest {
-  headers?: {
-    authorization?: string;
-  };
-  user?: unknown;
+interface GraphQLContext {
+  req: Request;
+  res: Response;
 }
 
 @Module({
@@ -29,7 +28,16 @@ interface GraphQLRequest {
       autoSchemaFile: true,
       playground: process.env.APP_ENV === 'local',
       introspection: process.env.APP_ENV === 'local',
-      context: ({ req }: { req: GraphQLRequest }) => ({ req }), // Pass request object to GraphQL context for authentication
+      context: ({
+        req,
+        res,
+      }: {
+        req: Request;
+        res: Response;
+      }): GraphQLContext => ({
+        req,
+        res,
+      }), // Pass request object to GraphQL context for authentication
       cache: new InMemoryLRUCache({
         maxSize: Math.pow(2, 20) * 10, // 10MB
         ttl: 300_000,
