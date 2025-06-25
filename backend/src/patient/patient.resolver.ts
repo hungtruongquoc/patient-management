@@ -4,8 +4,9 @@ import { CreatePatientInput } from './dto/create-patient.input';
 import { UpdatePatientInput } from './dto/update-patient.input';
 import { PatientService } from './patient.service';
 import { AppLogger } from '../common/logging/app-logger';
-import { UseGuards } from '@nestjs/common';
+import { UseGuards, UseInterceptors } from '@nestjs/common';
 import { GraphQLJwtGuard } from '../auth/graphql-jwt.guard';
+import { PatientExistenceValidationInterceptor } from '../common/interceptors/patient-existence-validation.interceptor';
 
 @Resolver(() => Patient)
 export class PatientResolver {
@@ -80,6 +81,7 @@ export class PatientResolver {
   }
 
   @Mutation(() => Patient)
+  @UseInterceptors(PatientExistenceValidationInterceptor)
   async createPatient(
     @Args('createPatientInput') createPatientInput: CreatePatientInput,
   ): Promise<Patient> {
@@ -98,6 +100,7 @@ export class PatientResolver {
   }
 
   @Mutation(() => Patient, { nullable: true })
+  @UseInterceptors(PatientExistenceValidationInterceptor)
   async updatePatient(
     @Args('id', { type: () => Int }) id: number,
     @Args('updatePatientInput') updatePatientInput: UpdatePatientInput,

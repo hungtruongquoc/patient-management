@@ -14,23 +14,10 @@ export class PatientService {
   ) {}
 
   async create(createPatientInput: CreatePatientInput): Promise<Patient> {
-    const existingPatient: Patient | null =
-      await this.patientRepository.findOne({
-        where: [
-          { email: createPatientInput.email },
-          { ssn: createPatientInput.ssn },
-        ],
-      });
-
-    if (existingPatient) {
-      throw new Error('Patient with this email or SSN already exists');
-    }
-
     try {
       const patient = this.patientRepository.create(createPatientInput);
       return this.patientRepository.save(patient);
     } catch (error) {
-
       AppLogger.error('Failed to create patient', {
         operation: 'create.patient',
         error: error instanceof Error ? error.message : 'Unknown error',
