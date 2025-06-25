@@ -12,5 +12,8 @@ describe('Patient Entity', () => {
       patient.ssn = '123456789';
       expect(patient.ssnLastFour).toBe('*****6789');
     });
+    it('should return null if SSN it not found', () => {
+      expect(patient.ssnLastFour).toBeNull();
+    });
   });
 });

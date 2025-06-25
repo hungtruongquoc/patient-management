@@ -8,8 +8,10 @@ import { PatientModule } from './patient/patient.module';
 import { DatabaseModule } from './database/database.module';
 import { AuthModule } from './auth/auth.module';
 import { UserModule } from './user/user.module';
-import { APP_INTERCEPTOR } from '@nestjs/core';
+import { APP_INTERCEPTOR, APP_GUARD } from '@nestjs/core';
 import { TraceInterceptor } from './common/interceptors/trace.interceptor';
+import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
+import { CustomThrottleGuard } from './common/guards/custom.throttle.guard';
 
 interface GraphQLRequest {
   headers?: {
@@ -32,6 +34,18 @@ interface GraphQLRequest {
     PatientModule,
     AuthModule,
     UserModule,
+    ThrottlerModule.forRoot([
+      {
+        name: 'short',
+        ttl: 1000,
+        limit: 3,
+      },
+      {
+        name: 'long',
+        ttl: 60000,
+        limit: 100,
+      },
+    ]),
   ],
   controllers: [AppController],
   providers: [
@@ -39,6 +53,10 @@ interface GraphQLRequest {
     {
       provide: APP_INTERCEPTOR,
       useClass: TraceInterceptor,
+    },
+    {
+      provide: APP_GUARD,
+      useClass: CustomThrottleGuard,
     },
   ],
 })
